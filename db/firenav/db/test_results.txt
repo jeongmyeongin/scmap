@@ -1,0 +1,110 @@
+======== 테스트 결과 ========
+ 번호 | 결과 |                              항목                              |                                                 상세                                                  
+------+------+----------------------------------------------------------------+-------------------------------------------------------------------------------------------------------
+    1 | 통과 | T01 표-3 차종 10종 등록                                        | 
+    2 | 통과 | T02 모든 템플릿 Ri < Ro                                        | 
+    3 | 통과 | T03 템플릿 신뢰등급 L3                                         | 
+    4 | 통과 | T04 관리자: 템플릿에서 차량 생성                               | 
+    5 | 통과 | T05 템플릿 복사 차량은 만재 중량 미입력(NULL)                  | 
+    6 | 통과 | T06 전고 395(cm 단위 실수) 거부                                | 거부됨: numeric field overflow
+    7 | 통과 | T07 Ri ≥ Ro 거부                                               | 거부됨: new row for relation "vehicles" violates check constraint "chk_ri
+    8 | 통과 | T08 공차 > 만재 거부                                           | 거부됨: new row for relation "vehicles" violates check constraint "chk_cu
+    9 | 통과 | T09 축하중 1개만 입력 거부                                     | 거부됨: new row for relation "vehicles" violates check constraint "chk_ax
+   10 | 통과 | T10 미러 포함 폭 < 차체 폭 거부                                | 거부됨: new row for relation "vehicles" violates check constraint "chk_mi
+   11 | 통과 | T11 정상 제원 차량 등록                                        | 
+   12 | 통과 | T12 사유 없는 제원 수정 거부                                   | 거부됨: 차량 제원 수정에는 새 수정 사유(change_reason)가 필요합니다
+   13 | 통과 | T13 사유 있는 제원 수정                                        | 
+   14 | 통과 | T14 이력에 변경 전·후 값 저장                                  | 
+   15 | 통과 | T15 같은 사유 재사용 수정 거부                                 | 거부됨: 차량 제원 수정에는 새 수정 사유(change_reason)가 필요합니다
+   16 | 통과 | T16 제원 외 항목(활성 여부)은 사유 없이 수정                   | 
+   17 | 통과 | T17 L3 자료를 확인됨(verified)으로 저장 거부 (비대칭 규칙)     | 거부됨: 위험정보는 확인됨(verified) 상태로 바로 등록할 수 없습니다. 등록 후 현장 검증 절차를 거치세요
+   18 | 통과 | T18 높이 제한인데 값 없음 거부                                 | 거부됨: new row for relation "hazards" violates check constraint "chk_lim
+   19 | 통과 | T19 높이 0.3m(비정상 값) 거부                                  | 거부됨: new row for relation "hazards" violates check constraint "chk_val
+   20 | 통과 | T20 국외 좌표(위경도 뒤바뀜) 거부                              | 거부됨: new row for relation "hazards" violates check constraint "chk_geo
+   21 | 통과 | T21 확인됨인데 확인일 없음 거부                                | 거부됨: 위험정보는 확인됨(verified) 상태로 바로 등록할 수 없습니다. 등록 후 현장 검증 절차를 거치세요
+   22 | 통과 | T22a 검토자: verified로 바로 등록 거부 (현장 검증 절차 필수)   | 거부됨: 위험정보는 확인됨(verified) 상태로 바로 등록할 수 없습니다. 등록 후 현장 검증 절차를 거치세요
+   23 | 통과 | T22 검토자: 굴다리 높이 3.45m 미검증 등록 후 현장 검증         | 
+   24 | 통과 | T23 검토자: 기간 지난 공사 등록                                | 
+   25 | 통과 | T24 기간 지난 공사는 expired로 표시                            | 
+   26 | 통과 | T25 출처 충돌 등록                                             | 
+   27 | 통과 | T26 미해결 충돌 → effective_status = conflict                  | 
+   28 | 통과 | T27 반경 200m 내 위험정보 검색 (열람자)                        | 기대 2, 실제 2
+   29 | 통과 | T28 반경 10m에는 없음                                          | 기대 0, 실제 0
+   30 | 통과 | T29 같은 출처·같은 원본 ID 중복 거부                           | 거부됨: duplicate key value violates unique constraint "uq_source_record"
+   31 | 통과 | T30 비로그인: 차량 0건                                         | 기대 0, 실제 0
+   32 | 통과 | T31 비로그인: 위험정보 0건                                     | 기대 0, 실제 0
+   33 | 통과 | T32 비활성 계정: 차량 0건                                      | 기대 0, 실제 0
+   34 | 통과 | T33 열람자: 차량 조회 가능                                     | 기대 2, 실제 2
+   35 | 통과 | T34 열람자: 위험정보 등록 거부                                 | 거부됨: new row violates row-level security policy for table "hazards"
+   36 | 통과 | T35 대원: 차량 등록 거부                                       | 거부됨: new row violates row-level security policy for table "vehicles"
+   37 | 통과 | T36a 대원: 차량 제원 수정 시도 (RLS로 0건 처리 기대)           | 
+   38 | 통과 | T36 대원 수정 시도 후에도 전고 3.40 유지                       | 
+   39 | 통과 | T37 대원: 본인 명의 현장 제보                                  | 
+   40 | 통과 | T38 대원: 타인 명의 제보 거부                                  | 거부됨: new row violates row-level security policy for table "field_repor
+   41 | 통과 | T39 대원: 본인 제보 직접 승인 처리 거부                        | 거부됨: 제보 검토 권한이 없습니다
+   42 | 통과 | T40 열람자: 타인 제보 0건                                      | 기대 0, 실제 0
+   43 | 통과 | T41 검토자: 제보 채택 → 검증 대기 위험정보 생성                | 
+   44 | 통과 | T42 채택 제보는 L4·pending_review (verified 아님)              | 
+   45 | 통과 | T43 이미 처리된 제보 재처리 거부                               | 거부됨: 이미 처리된 제보입니다
+   46 | 통과 | T44 대원: 자기 역할을 admin으로 변경 거부                      | 거부됨: 역할·소속·활성 여부는 관리자만 변경할 수 있습니다
+   47 | 통과 | T45 대원: 자기 표시명 변경 허용                                | 
+   48 | 통과 | T46 대원: 다른 사람 프로필 0건(본인만)                         | 기대 1, 실제 1
+   49 | 통과 | T47 대원: 변경 이력(audit_log) 0건                             | 기대 0, 실제 0
+   50 | 통과 | T48 관리자도 audit_log 직접 수정 불가                          | 거부됨: permission denied for table audit_log
+   51 | 통과 | T49 검토자: 위험정보 삭제 거부(관리자 전용)                    | 거부됨: RLS로 0건 삭제
+   52 | 통과 | T50 audit_log에 차량·위험정보·제보 변경 기록                   | 
+   53 | 통과 | T51 audit_log에 행위자(actor) 기록                             | 
+   54 | 통과 | T52 출동주소·경로이력·사진 컬럼 없음                           | 
+   55 | 통과 | T53 검토자: 본인 명의 제보 작성                                | 
+   56 | 통과 | T54 검토자: 본인 제보 자기 승인 거부                           | 거부됨: 본인 제보는 본인이 채택할 수 없습니다
+   57 | 통과 | T55 관리자: 높이 39.5m(단위 오류) 차량 거부                    | 거부됨: new row for relation "vehicles" violates check constraint "chk_he
+   58 | 통과 | T56 검토자: 채택 제보를 UPDATE로 직접 verified 전환 거부       | 거부됨: 확인됨(verified) 전환·핵심값 수정은 현장 검증 절차(verify_hazard_on_site)로만 가능합니다
+   59 | 통과 | T57 검토자: 검증 이력 테이블 직접 INSERT 거부                  | 거부됨: permission denied for table hazard_verifications
+   60 | 통과 | T58 대원: 현장 검증 함수 호출 거부                             | 거부됨: 현장 검증 권한이 없습니다
+   61 | 통과 | T59 비로그인: 현장 검증 함수 호출 거부                         | 거부됨: permission denied for function verify_hazard_on_site
+   62 | 통과 | T60 제한 유형 측정값 없이 confirmed 거부                       | 거부됨: 제한 유형은 현장 측정값이 필요합니다
+   63 | 통과 | T61 제한 유형 육안 확인만으로 검증 거부                        | 거부됨: 제한 유형은 육안 확인만으로 검증할 수 없습니다 (실측 필요)
+   64 | 통과 | T62 측정값 단위 오류(폭 265, cm 입력) 거부                     | 거부됨: 측정값이 허용 범위를 벗어났습니다 (단위 확인): 265
+   65 | 통과 | T63 미래 확인 날짜 거부                                        | 거부됨: 현장 확인 날짜가 없거나 미래입니다
+   66 | 통과 | T64 근거 10자 미만 거부                                        | 거부됨: new row for relation "hazard_verifications" violates check constr
+   67 | 통과 | T65a 실패한 검증 시도 후에도 검증 대기 유지                    | 
+   68 | 통과 | T65 검토자: 정상 현장 검증 (줄자 2.65m)                        | 
+   69 | 통과 | T66 검증 후 L1·verified, 값=현장 측정값(2.65), 확인일 기록     | 
+   70 | 통과 | T67 검증 이력: 검증자·날짜·방법·근거·측정값·이전 상태 기록     | 
+   71 | 통과 | T68 verified 상태에서 값 직접 수정 거부                        | 거부됨: 확인됨(verified) 전환·핵심값 수정은 현장 검증 절차(verify_hazard_on_site)로만 가능합니다
+   72 | 통과 | T69 verified 상태에서 설명만 수정 허용                         | 
+   73 | 통과 | T70 관리기관 공식 자료로 검증                                  | 
+   74 | 통과 | T71 관리기관 자료 검증은 L2, 값 18t로 갱신                     | 
+   75 | 통과 | T72 현장에 없음(not_found) 처리                                | 
+   76 | 통과 | T73 not_found → rejected                                       | 
+   77 | 통과 | T74 관리자도 검증 이력 수정 불가                               | 거부됨: permission denied for table hazard_verifications
+   78 | 통과 | T75 관리자도 검증 이력 삭제 불가                               | 거부됨: permission denied for table hazard_verifications
+   79 | 통과 | T76 관리자: 검토자 제보 채택                                   | 
+   80 | 통과 | T77 제보자 본인은 자기 제보 현장 검증 불가                     | 거부됨: 제보자 본인은 해당 제보를 현장 검증할 수 없습니다
+   81 | 통과 | T78 검증 관련 변경이 audit_log에 기록                          | 
+   82 | 통과 | T79 제보 위경도 뒤바뀜 거부                                    | 거부됨: new row for relation "field_reports" violates check constraint "c
+   83 | 통과 | T80 제보 국외 좌표(0,0) 거부                                   | 거부됨: new row for relation "field_reports" violates check constraint "c
+   84 | 통과 | T81 제보 높이 34.5(단위 오류) 거부                             | 거부됨: new row for relation "field_reports" violates check constraint "c
+   85 | 통과 | T82 제보 폭 270(cm 입력) 거부                                  | 거부됨: new row for relation "field_reports" violates check constraint "c
+   86 | 통과 | T83 제보 중량 15000(kg 입력) 거부                              | 거부됨: numeric field overflow
+   87 | 통과 | T84 제한 유형 제보에 측정값 없음 거부                          | 거부됨: new row for relation "field_reports" violates check constraint "c
+   88 | 통과 | T85 값이 없어야 하는 유형(공사)에 값 거부                      | 거부됨: new row for relation "field_reports" violates check constraint "c
+   89 | 통과 | T86 미래 측정일 제보 거부                                      | 거부됨: 측정일이 미래입니다: 2026-11-12
+   90 | 통과 | T87 오류 제보는 하나도 저장되지 않아 위험정보로 넘어갈 수 없음 | 
+   91 | 통과 | T88 정상 제보 (공사, 값 없음)                                  | 
+   92 | 통과 | T89 프로필 없는 신규 가입자: 차량 0건                          | 기대 0, 실제 0
+   93 | 통과 | T90 프로필 없는 신규 가입자: 본인 admin 프로필 생성 거부       | 거부됨: new row violates row-level security policy for table "profiles"
+   94 | 통과 | T91 프로필 없는 신규 가입자: viewer 프로필 자가 생성도 거부    | 거부됨: new row violates row-level security policy for table "profiles"
+   95 | 통과 | T92 열람자: 다른 사용자를 admin으로 변경 거부                  | 거부됨: RLS로 0건
+   96 | 통과 | T93 검토자: 비활성 admin 계정 재활성화 거부                    | 거부됨: RLS로 0건
+   97 | 통과 | T94 SQL Editor(관리자 DB 권한)에서 최초 관리자 등록            | 
+   98 | 통과 | T95 최초 관리자: 로그인 후 안전센터 등록 가능                  | 
+   99 | 통과 | T96 최초 관리자 등록이 audit_log에 기록                        | 
+  100 | 통과 | T97 비로그인: 제보 채택 함수 호출 거부                         | 거부됨: permission denied for function review_field_report
+(100 rows)
+
+ 통과 | 실패 | 전체 
+------+------+------
+  100 |    0 |  100
+(1 row)
+

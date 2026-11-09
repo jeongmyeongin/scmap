@@ -1,0 +1,183 @@
+/* ---------- 토큰 ---------- */
+:root {
+  --apparatus-red: #b3121f;   /* 소방차 적색: 주요 동작, 도착 */
+  --reflect-amber: #f2a900;   /* 반사띠 황색: 반사띠 무늬, 주의(추후 판정 색) */
+  --signal-blue: #1f5fbf;     /* 현재 위치 */
+  --unverified: #8a8f96;      /* 미확인(추후 판정 색) */
+  --bg: #f4f5f3;              /* 운전석 실내등 아래 종이 같은 밝은 회백 */
+  --surface: #ffffff;
+  --text: #1c2026;
+  --muted: #5b626b;
+  --line: #d6d9dc;
+  --focus: #1f5fbf;
+  --on-red: #ffffff;
+  color-scheme: light;
+
+  --font: var(--font-sans), 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --touch: 48px;              /* 장갑 착용 고려 최소 터치 크기 */
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15181c;
+    --surface: #1e2228;
+    --text: #eceef0;
+    --muted: #a5abb3;
+    --line: #353b43;
+    --focus: #7fb0ff;
+    --apparatus-red: #e0343f;
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: var(--font);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  word-break: keep-all;        /* 한글 단어 중간 줄바꿈 방지 */
+  overflow-wrap: anywhere;
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- 배치: 모바일 = 지도 전체 + 아래 패널 / PC = 왼쪽 패널 + 지도 ---------- */
+.app { position: fixed; inset: 0; display: flex; flex-direction: column-reverse; }
+.map-wrap { position: relative; flex: 1 1 auto; min-height: 0; }
+.map { position: absolute; inset: 0; background: var(--line); }
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 58dvh;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 10;
+}
+.panel.is-closed .panel-body, .panel.is-closed .notice { display: none; }
+
+@media (min-width: 760px) {
+  .app { flex-direction: row; }
+  .panel { width: 400px; max-height: none; border-top: 0; border-right: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+  .panel.is-closed .panel-body, .panel.is-closed .notice { display: block; }
+  .panel-toggle { display: none; }
+}
+
+/* 반사띠(쉐브론): 소방차 후면 표식. 이 화면에서 유일한 장식 */
+.chevron {
+  height: 10px;
+  flex: none;
+  background: repeating-linear-gradient(-45deg, var(--apparatus-red) 0 12px, var(--reflect-amber) 12px 24px);
+}
+
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px 4px; }
+.panel-head h1 { margin: 0; font-size: var(--step-1); font-weight: 760; letter-spacing: -0.01em; }
+.panel-toggle {
+  min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: transparent; font-size: var(--step--1); cursor: pointer;
+}
+.notice { margin: 0 16px 8px; font-size: var(--step--1); color: var(--muted); }
+
+.panel-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 16px 12px; overscroll-behavior: contain; }
+.panel-foot {
+  display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 8px 16px;
+  border-top: 1px solid var(--line); font-size: var(--step--1); color: var(--muted);
+}
+
+/* 출발·도착 */
+.endpoints { margin: 0 0 12px; display: grid; gap: 2px; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.endpoint { display: grid; grid-template-columns: 3.25rem 1fr; align-items: start; gap: 8px; padding: 10px 12px; background: var(--surface); }
+.endpoint + .endpoint { border-top: 1px solid var(--line); }
+.endpoint dt { font-weight: 700; }
+.endpoint:first-child dt { color: var(--signal-blue); }
+.endpoint:last-child dt { color: var(--apparatus-red); }
+.endpoint dd { margin: 0; overflow-wrap: anywhere; }
+.link { display: inline-block; margin-left: 8px; padding: 0; border: 0; background: none; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: var(--step--1); min-height: 32px; }
+
+.route-pending { margin: 0 0 12px; padding: 10px 12px; border-left: 4px solid var(--unverified); background: color-mix(in srgb, var(--unverified) 10%, transparent); }
+.route-pending p { margin: 0; }
+.muted { color: var(--muted); font-size: var(--step--1); }
+
+/* 검색 */
+.search { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
+.seg button { min-height: 40px; padding: 0 16px; border: 0; background: transparent; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-checked='true'] { background: var(--text); color: var(--surface); font-weight: 700; }
+.search-row { display: flex; gap: 8px; }
+.search-row input {
+  flex: 1; min-width: 0; min-height: var(--touch); padding: 0 12px;
+  border: 2px solid var(--line); border-radius: var(--radius-sm); background: var(--bg);
+}
+.search-row input:focus { border-color: var(--focus); outline: none; }
+button.primary, .search-row .primary {
+  flex: none; white-space: nowrap;
+  min-height: var(--touch); padding: 0 18px; border: 0; border-radius: var(--radius-sm);
+  background: var(--apparatus-red); color: var(--on-red); font-weight: 700; cursor: pointer;
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.hint { margin: 8px 0 0; font-size: var(--step--1); color: var(--muted); }
+.alert { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid var(--reflect-amber); background: color-mix(in srgb, var(--reflect-amber) 14%, transparent); font-size: var(--step--1); }
+.alert p { margin: 0; }
+.alert p + p { margin-top: 4px; }
+
+.results { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.results li {
+  display: grid; grid-template-columns: 2rem 1fr; gap: 4px 10px; padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.result-no { width: 1.75rem; height: 1.75rem; display: grid; place-items: center; border-radius: 50%; background: var(--text); color: var(--surface); font-size: var(--step--1); font-weight: 700; }
+.result-text { display: grid; }
+.result-text span { font-size: var(--step--1); color: var(--muted); }
+.result-actions { grid-column: 2; display: flex; gap: 8px; }
+.result-actions button { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; }
+.result-actions .primary { border: 0; }
+
+/* 지도 위 도구 */
+.map-tools { position: absolute; right: 12px; top: calc(12px + env(safe-area-inset-top, 0px)); display: grid; gap: 8px; z-index: 5; }
+.tool {
+  min-height: var(--touch); padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface); box-shadow: 0 1px 3px rgb(0 0 0 / 0.25); cursor: pointer; font-weight: 600;
+}
+.tool.is-active { background: var(--apparatus-red); color: var(--on-red); border-color: var(--apparatus-red); }
+.map-state {
+  position: absolute; inset: 0; display: grid; place-content: center; gap: 12px; padding: 24px;
+  text-align: center; background: var(--bg); color: var(--muted); z-index: 6;
+}
+.map-state.is-error { color: var(--text); }
+.map-state.is-error p { max-width: 32rem; margin: 0; }
+.map-state.is-error button { justify-self: center; }
+.map-toast {
+  position: absolute; left: 12px; right: 12px; bottom: 12px; margin: 0; padding: 10px 12px; z-index: 5;
+  background: var(--surface); border-left: 4px solid var(--reflect-amber); box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  font-size: var(--step--1);
+}
+
+/* 지도 표시물 (카카오 CustomOverlay 안에 들어감) */
+.gps-dot {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--signal-blue);
+  border: 3px solid #fff; box-shadow: 0 0 0 2px var(--signal-blue);
+}
+.pin {
+  transform: translateY(-6px); padding: 4px 10px; border-radius: var(--radius-sm);
+  font: 700 13px/1.4 var(--font); color: #fff; white-space: nowrap; box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+.pin-origin { background: var(--signal-blue); }
+.pin-dest { background: var(--apparatus-red); }
+.pin-result { background: #1c2026; min-width: 26px; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
